@@ -1,0 +1,19 @@
+spring:
+  batch:
+    job:
+      enabled: false
+    initialize-schema: always
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/batch_pets
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml
