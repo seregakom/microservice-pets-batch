@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add_batch_job_execution" author="Sergey_Komarov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="${prefix}_batch_job_execution"/>
+            </not>
+        </preConditions>
+        <createTable tableName="${prefix}_batch_job_execution">
+            <column name="job_execution_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="job_instance_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="timestamp"/>
+            <column name="end_time" type="timestamp"/>
+            <column name="status" type="varchar(10)"/>
+            <column name="exit_code" type="varchar(2500)"/>
+            <column name="exit_message" type="varchar(2500)"/>
+            <column name="last_updated" type="timestamp"/>
+            <column name="job_configuration_location" type="varchar(2500)"/>
+        </createTable>
+        <addPrimaryKey tableName="${prefix}_batch_job_execution" columnNames="job_execution_id"/>
+        <addForeignKeyConstraint
+                baseTableName="${prefix}_batch_job_execution"
+                baseColumnNames="job_instance_id"
+                constraintName="job_inst_exec_fk"
+                referencedTableName="${prefix}_batch_job_instance"
+                referencedColumnNames="job_instance_id"/>
+    </changeSet>
+</databaseChangeLog>

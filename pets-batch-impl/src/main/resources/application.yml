@@ -3,6 +3,7 @@ spring:
     job:
       enabled: false
     initialize-schema: always
+#    table-prefix: pet_
 
   datasource:
     url: jdbc:postgresql://localhost:5433/batch_pets

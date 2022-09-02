@@ -5,6 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
 
+    <property name="prefix" value="pet"/>
+
     <include file="db/changelog/changeset/V1__create_pets_table.xml"></include>
+<!--    <include file="db/changelog/batch/V2__add_batch_job_instance.xml"></include>-->
+<!--    <include file="db/changelog/batch/V3_add_batch_job_execution.xml"></include>-->
 
 </databaseChangeLog>

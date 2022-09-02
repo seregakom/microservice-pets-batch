@@ -45,8 +45,9 @@ public class BatchConfig {
     private Random rn = new Random();
 
     @Bean
-    public Job job(Step step) {
+    public Job job(Step step, BatchListener batchListener) {
         return jobs.get("job")
+                .listener(batchListener)
                 .flow(step)
                 .end()
                 .build();
@@ -56,7 +57,7 @@ public class BatchConfig {
     public Step step(ItemReader<Pet> itemReader, ItemWriter<Pet> itemWriter) {
         return steps
                 .get("step1")
-                .<Pet, Pet>chunk(3)
+                .<Pet, Pet>chunk(10)
                 .reader(itemReader)
                 .processor(itemProcessor())
                 .writer(itemWriter)
@@ -64,7 +65,6 @@ public class BatchConfig {
     }
 
     @Bean
-    @StepScope
     public JdbcPagingItemReader<Pet> itemReader() {
         JdbcPagingItemReader<Pet> reader = new JdbcPagingItemReader<>();
         reader.setDataSource(dataSource);
@@ -78,7 +78,7 @@ public class BatchConfig {
         mySqlPagingQueryProvider.setFromClause("from pets");
         mySqlPagingQueryProvider.setWhereClause("age = 0");
         Map<String, Order> orderByName = new HashMap<>();
-        orderByName.put("name", Order.ASCENDING);
+        orderByName.put("id", Order.ASCENDING);
         mySqlPagingQueryProvider.setSortKeys(orderByName);
 
         reader.setQueryProvider(mySqlPagingQueryProvider);
@@ -87,17 +87,22 @@ public class BatchConfig {
     }
 
     @Bean
-    @StepScope
     ItemProcessor<Pet, Pet> itemProcessor() {
         return pet -> {
-            log.info("Processing " + pet.getName());
+            log.info("Processing start" + pet.getName() + ", id=" + pet.getId());
+
+            if (pet.getWeight() == 0.0) {
+                throw new RuntimeException("Some error");
+            }
+
             pet.setAge(rn.nextInt(10) + 1);
+            log.info("Processing end" + pet.getName() + ", id=" + pet.getId());
+
             return pet;
         };
     }
 
     @Bean
-    @StepScope
     public JdbcBatchItemWriter<Pet> itemWriter() {
         JdbcBatchItemWriter<Pet> writer = new JdbcBatchItemWriter<>();
         writer.setDataSource(dataSource);

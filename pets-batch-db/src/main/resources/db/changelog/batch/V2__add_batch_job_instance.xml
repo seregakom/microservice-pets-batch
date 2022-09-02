@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="add_batch_job_instance" author="Sergey_Komarov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="${prefix}_batch_job_instance"/>
+            </not>
+        </preConditions>
+        <createTable tableName="${prefix}_batch_job_instance">
+            <column name="job_instance_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="job_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_key" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint
+                columnNames="job_name, job_key"
+                constraintName="job_inst_un"
+                tableName="${prefix}_batch_job_instance"/>
+        <addPrimaryKey tableName="${prefix}_batch_job_instance" columnNames="job_instance_id"/>
+    </changeSet>
+</databaseChangeLog>
